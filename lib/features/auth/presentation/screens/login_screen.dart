@@ -33,7 +33,7 @@ class _LoginScreenState extends State<LoginScreen> {
             _emailController.text,
             _passwordController.text);
         ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text("Logged in")));
-        Navigator.of(context).pushReplacement(MaterialPageRoute(builder: (_)=>HomeScreen()));
+        Navigator.of(context).pushReplacement(MaterialPageRoute(builder: (_)=>MainWrapper()));
       } catch (error) {
         isLoading=false;
         ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(error.toString())));

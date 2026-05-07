@@ -3,6 +3,8 @@ static String baseurl="https://api.escuelajs.co/api/v1/";
 static String profile="auth/profile";
 static String login="auth/login";
 static String signUp="users/";
+static String allproducts="products/";
+static String allcategories="categories/";
 
 }
 

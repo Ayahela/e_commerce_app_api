@@ -18,6 +18,7 @@ class ProductCard extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       decoration: BoxDecoration(
+
         color: Colors.white,
         borderRadius: BorderRadius.circular(20),
         boxShadow: [
@@ -31,36 +32,46 @@ class ProductCard extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Expanded(
-            child: Container(
-              width: double.infinity,
-              decoration: BoxDecoration(
-                gradient: LinearGradient(
-                  colors: [Colors.blue.shade50, Colors.blue.shade100],
-                  begin: Alignment.topLeft,
-                  end: Alignment.bottomRight,
-                ),
-                borderRadius: const BorderRadius.vertical(top: Radius.circular(20)),
-              ),
-              child: Stack(
-                children: [
-                  const Center(child: Icon(Icons.shopping_bag_outlined, size: 40, color: Colors.blue)),
-                  PositionBag(
-                    top: 10,
-                    right: 10,
-                    child: Container(
-                      padding: const EdgeInsets.all(6),
-                      decoration: const BoxDecoration(
-                        color: Colors.white,
-                        shape: BoxShape.circle,
-                      ),
-                      child: const Icon(Icons.favorite_border, size: 18, color: Colors.red),
-                    ),
+            // 1. لازم يكون محاط بـ Expanded عشان ياخد مساحة من الكارد
+            Expanded(
+              child: Container(
+                width: double.infinity,
+                // 2. بنحط الصورة هنا في الـ decoration
+                decoration: BoxDecoration(
+                  borderRadius: const BorderRadius.vertical(top: Radius.circular(20)),
+                  // بنعمل تدرج لوني خفيف كـ background لحد ما الصورة تحمل
+                  gradient: LinearGradient(
+                    colors: [Colors.blue.shade50, Colors.blue.shade100],
+                    begin: Alignment.topLeft,
+                    end: Alignment.bottomRight,
                   ),
-                ],
+                  // 3. هنا الصورة الحقيقية بتظهر
+                  image: DecorationImage(
+                    image: NetworkImage(image), // الرابط النظيف
+                    fit: BoxFit.cover, // السحر اللي بيظبط أبعاد الصورة
+                    //onError: (exception, stackTrace) => print("Image Error: $exception"), // اختياري للـ debugging
+                  ),
+                ),
+                // 4. الـ Stack دلوقتي جواه بس الأيكونز (زي القلب)
+                child: Stack(
+                  children: [
+                    PositionBag(
+                      top: 10,
+                      right: 10,
+                      child: Container(
+                        padding: const EdgeInsets.all(6),
+                        decoration: const BoxDecoration(
+                          color: Colors.white,
+                          shape: BoxShape.circle,
+                        ),
+                        child: const Icon(Icons.favorite_border, size: 18, color: Colors.red),
+                      ),
+                    ),
+                  ],
+                ),
               ),
             ),
-          ),
+
           Padding(
             padding: const EdgeInsets.all(12.0),
             child: Column(
