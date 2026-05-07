@@ -24,5 +24,4 @@ class ProfileModel {
     avatar = json['avatar'];
   }
 
-
 }

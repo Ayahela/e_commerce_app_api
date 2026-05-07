@@ -38,7 +38,6 @@ class _LoginScreenState extends State<LoginScreen> {
         isLoading=false;
         ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(error.toString())));
 
-
       }
     }
   }

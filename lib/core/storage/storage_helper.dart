@@ -12,5 +12,4 @@ class StorageHelper {
   static Future<void> deleteToken()async{
     await _storage.delete(key: "access_token");
   }
-
 }

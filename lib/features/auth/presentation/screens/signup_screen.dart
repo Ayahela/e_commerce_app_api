@@ -29,7 +29,6 @@ class _SignupScreenState extends State<SignupScreen> {
     if (_formKey.currentState!.validate()) {
       try {
         setState(() { isLoading = true; });
-
         await AuthApi().signup(
             _nameController.text,
             _emailController.text,

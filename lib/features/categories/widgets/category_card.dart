@@ -11,7 +11,6 @@ class CategoryCard extends StatelessWidget {
     required this.name,
     required this.imageUrl,
   });
-
   @override
   Widget build(BuildContext context) {
     return Container(

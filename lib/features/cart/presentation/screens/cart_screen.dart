@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 
 class CartScreen extends StatelessWidget {
   const CartScreen({super.key});
-
   @override
   Widget build(BuildContext context) {
     final List<Map<String, dynamic>> cartItems = List.generate(3, (index) => {

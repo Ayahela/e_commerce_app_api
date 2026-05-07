@@ -23,7 +23,6 @@ class CategoryProduct extends StatelessWidget {
           padding: const EdgeInsets.all(16.0),
           child: GridView.builder(
             shrinkWrap: true,
-
             gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
               crossAxisCount: 2,
               childAspectRatio: 0.7,
