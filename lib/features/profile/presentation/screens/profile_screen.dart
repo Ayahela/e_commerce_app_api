@@ -1,11 +1,48 @@
+import 'dart:io';
+
+import 'package:ecommerce_app_api_26/core/storage/non_sensitive_data.dart';
 import 'package:ecommerce_app_api_26/features/profile/data/models/profile_model.dart';
 import 'package:ecommerce_app_api_26/features/profile/data/profile_api/profile_api.dart';
+import 'package:ecommerce_app_api_26/features/profile/data/profile_api/upload_image_api.dart';
 import 'package:flutter/material.dart';
+import 'package:image_picker/image_picker.dart';
 
-class ProfileScreen extends StatelessWidget {
+class ProfileScreen extends StatefulWidget {
   const ProfileScreen({super.key});
 
   @override
+  State<ProfileScreen> createState() => _ProfileScreenState();
+}
+
+class _ProfileScreenState extends State<ProfileScreen> {
+  File? _image;
+  String? imageUrl;
+  final _picker=ImagePicker();
+  void initState() {
+    super.initState();
+    loadImage();
+  }
+  Future<void> loadImage()async{
+    imageUrl=await NonSensitiveData.getProfileImage();
+    setState(() {});
+  }
+  pickimage()async{
+    final pickedEmage =await _picker.pickImage(source: ImageSource.gallery);
+    if (pickedEmage !=null){
+      _image=File(pickedEmage.path);
+
+      var result = await UploadImageApi().uploadImage(_image!);
+
+      await NonSensitiveData.saveProfileImage(result.location!);
+      imageUrl = result.location;
+
+      setState(() {});
+    }
+
+
+  }
+  @override
+
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.grey.shade50,
@@ -46,7 +83,12 @@ class ProfileScreen extends StatelessWidget {
                      child: CircleAvatar(
                        radius: 40,
                        backgroundColor: Colors.white,
-                       backgroundImage: NetworkImage(profile!.avatar??"https://picsum.photos/800"),
+                       backgroundImage: imageUrl != null
+                           ? NetworkImage(imageUrl!)
+                           : NetworkImage(
+                         profile!.avatar ??
+                             "https://picsum.photos/800",
+                       ),
                      ),
                    ),
                    const SizedBox(width: 20),
@@ -54,7 +96,7 @@ class ProfileScreen extends StatelessWidget {
                      crossAxisAlignment: CrossAxisAlignment.start,
                      children: [
                        Text(
-                         profile.name??" ",
+                         profile?.name??" ",
                          style: TextStyle(
                            fontSize: 22,
                            fontWeight: FontWeight.bold,
@@ -62,7 +104,7 @@ class ProfileScreen extends StatelessWidget {
                          ),
                        ),
                        Text(
-                         profile.role??"member",
+                         profile?.role??"member",
                          style: TextStyle(color: Colors.white70, fontSize: 14),
                        ),
                      ],
@@ -70,7 +112,10 @@ class ProfileScreen extends StatelessWidget {
                    const Spacer(),
                    IconButton(
                      icon: const Icon(Icons.edit_outlined, color: Colors.white),
-                     onPressed: () {},
+                     onPressed: () {
+                       pickimage();
+
+                     },
                    ),
                  ],
                ),

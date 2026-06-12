@@ -5,6 +5,7 @@ static String login="auth/login";
 static String signUp="users/";
 static String allproducts="products/";
 static String allcategories="categories/";
+static String upload="files/upload";
 }
 
 class Apikeys{

@@ -106,6 +106,7 @@ class HomeScreen extends StatelessWidget {
                       price: product.price?.toDouble()??0.0,
                       description: product.description??"",
                       image: product.images![0],
+                      productId: product.id!,
                     );
                   },
                 ),
