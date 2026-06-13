@@ -6,6 +6,8 @@ static String signUp="users/";
 static String allproducts="products/";
 static String allcategories="categories/";
 static String upload="files/upload";
+// static String updateProfile="/users/{id}";
+
 }
 
 class Apikeys{

@@ -18,6 +18,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
   File? _image;
   String? imageUrl;
   final _picker=ImagePicker();
+  ProfileModel? profile;
+  @override
   void initState() {
     super.initState();
     loadImage();
@@ -32,6 +34,10 @@ class _ProfileScreenState extends State<ProfileScreen> {
       _image=File(pickedEmage.path);
 
       var result = await UploadImageApi().uploadImage(_image!);
+      await ProfileApi().updateAvatar(
+        profile!.id!,
+        result.location!,
+      );
 
       await NonSensitiveData.saveProfileImage(result.location!);
       imageUrl = result.location;
@@ -41,7 +47,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
 
   }
-  @override
+
 
   Widget build(BuildContext context) {
     return Scaffold(
@@ -53,7 +59,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
        if(snapshot.hasError||snapshot.data==null){
          return Center(child: Text("Error",style: TextStyle(fontSize: 25,color: Colors.red),));
        }
-       ProfileModel? profile = snapshot.data;
+       profile = snapshot.data;
        return SingleChildScrollView(
          child: Column(
            children: [
