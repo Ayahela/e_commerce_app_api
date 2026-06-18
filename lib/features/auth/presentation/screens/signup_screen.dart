@@ -2,6 +2,7 @@ import 'package:ecommerce_app_api_26/features/auth/presentation/screens/login_sc
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
+import '../../../data/auth_api/auth_api.dart';
 import '../../data/auth_api/auth_api.dart';
 
 class SignupScreen extends StatefulWidget {
@@ -29,46 +30,32 @@ class _SignupScreenState extends State<SignupScreen> {
 
   void _signup() async{
     if (_formKey.currentState!.validate()) {
-      UserCredential userCredential= await auth.createUserWithEmailAndPassword(email: _emailController.text, password: _passwordController.text);
-      if (userCredential.user!=null){
-        auth.currentUser!.sendEmailVerification();
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text("Account Created Successfully")),
+      setState(() {
+        isLoading = true;
+      });
+      try {
+        await AuthApi().signup(
+          _nameController.text,
+          _emailController.text,
+          _passwordController.text,
         );
+      ScaffoldMessenger.of(context).showSnackBar(
+                const SnackBar(content: Text("Account Created Successfully")),
+              );
 
-        Navigator.pushReplacement(
+              Navigator.pushReplacement(
+                context,
+                MaterialPageRoute(builder: (context) => const LoginScreen()),
+              );
+
+      } catch (e) {
+        setState(() {
+          isLoading = false;
+        });
+        ScaffoldMessenger.of(
           context,
-          MaterialPageRoute(builder: (context) => const LoginScreen()),
-        );
-      }else{
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text("Signup failed")),
-        );
+        ).showSnackBar(SnackBar(content: Text(e.toString())));
       }
-
-
-
-
-
-      // setState(() {
-      //   isLoading = true;
-      // });
-      // try {
-      //   await AuthApi().signup(
-      //     _nameController.text,
-      //     _emailController.text,
-      //     _passwordController.text,
-      //   );
-      //
-
-      // } catch (e) {
-      //   setState(() {
-      //     isLoading = false;
-      //   });
-      //   ScaffoldMessenger.of(
-      //     context,
-      //   ).showSnackBar(SnackBar(content: Text(e.toString())));
-      // }
     }
   }
 

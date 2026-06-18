@@ -11,7 +11,7 @@ import "package:ecommerce_app_api_26/features/data/models/response/token.dart";
 import "package:http/http.dart" as http;
 
 class AuthApi {
-  Future<Token_model> login(String email, String password) async {
+  Future<Token_model> login({String? email, String? password}) async {
     Uri url = Uri.parse(EndPoint.baseurl + EndPoint.login);
    LoginRequestModel loginRequest= LoginRequestModel(email: email,password: password);
     var response = await http.post(
