@@ -1,51 +1,15 @@
-import 'package:ecommerce_app_api_26/core/storage/non_sensitive_data.dart';
-import 'package:ecommerce_app_api_26/features/home/data/models/products_model.dart';
-import 'package:ecommerce_app_api_26/features/home/data/product_api/product_api.dart';
 import 'package:flutter/material.dart';
 
-class CartScreen extends StatefulWidget {
+class CartScreen extends StatelessWidget {
   const CartScreen({super.key});
 
   @override
-  State<CartScreen> createState() => _CartScreenState();
-}
-
-class _CartScreenState extends State<CartScreen> {
-  List<ProductsModel> cartProducts =[];
-  bool isLoading = true;
-  @override
-  void initState() {
-    super.initState();
-    loadCart();
-  }
-  loadCart()async{
-    final ids= await NonSensitiveData.getCartIds();
-    final products= await ProductApi().getAllProducts();
-    cartProducts = products.where((product) {
-      return ids.contains(
-        product.id.toString(),
-      );
-    }).toList();
-    isLoading= false;
-    setState(() {
-
-    });
-  }
-  double totalAmount(){
-    double total=0.0;
-    for(var product in cartProducts){
-      total+=product.price??0.0;
-    }
-    return total;
-  }
   Widget build(BuildContext context) {
-    if (isLoading) {
-      return const Scaffold(
-        body: Center(
-          child: CircularProgressIndicator(),
-        ),
-      );
-    }
+    final List<Map<String, dynamic>> cartItems = List.generate(3, (index) => {
+      'title': 'Premium Product ${index + 1}',
+      'price': (index + 1) * 35.0,
+      'quantity': 1,
+    });
 
     return Scaffold(
       backgroundColor: Colors.grey.shade50,
@@ -60,9 +24,9 @@ class _CartScreenState extends State<CartScreen> {
           Expanded(
             child: ListView.builder(
               padding: const EdgeInsets.all(16),
-              itemCount: cartProducts.length,
+              itemCount: cartItems.length,
               itemBuilder: (context, index) {
-                final item = cartProducts[index];
+                final item = cartItems[index];
                 return Container(
                   margin: const EdgeInsets.only(bottom: 16),
                   padding: const EdgeInsets.all(12),
@@ -94,12 +58,12 @@ class _CartScreenState extends State<CartScreen> {
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             Text(
-                              item.title??"",
+                              item['title'],
                               style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
                             ),
                             const SizedBox(height: 4),
                             Text(
-                              '\$${item.price??0.0}',
+                              '\$${item['price']}',
                               style: const TextStyle(color: Colors.blue, fontWeight: FontWeight.bold),
                             ),
                           ],
@@ -107,14 +71,10 @@ class _CartScreenState extends State<CartScreen> {
                       ),
                       Row(
                         children: [
-                          _buildQtyBtn(Icons.remove,
-                                  () async{
-                            await NonSensitiveData.deleteCart(item.id!);
-                            await loadCart();
-                                  }),
+                          _buildQtyBtn(Icons.remove, () {}),
                           Padding(
                             padding: const EdgeInsets.symmetric(horizontal: 8),
-                            child: Text('1', style: const TextStyle(fontWeight: FontWeight.bold)),
+                            child: Text('${item['quantity']}', style: const TextStyle(fontWeight: FontWeight.bold)),
                           ),
                           _buildQtyBtn(Icons.add, () {}),
                         ],
@@ -144,7 +104,7 @@ class _CartScreenState extends State<CartScreen> {
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
                     Text('Total Amount', style: TextStyle(color: Colors.grey.shade600, fontSize: 16)),
-                     Text('\$${totalAmount().toStringAsFixed(2)}',style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold, color: Colors.blue)),
+                    const Text('\$210.0', style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold, color: Colors.blue)),
                   ],
                 ),
                 const SizedBox(height: 20),

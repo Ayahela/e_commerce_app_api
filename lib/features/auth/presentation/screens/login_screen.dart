@@ -1,5 +1,7 @@
-import 'package:ecommerce_app_api_26/features/data/auth_api/auth_api.dart';
+import 'package:ecommerce_app_api_26/features/auth/data/auth_api/auth_api.dart';
+import 'package:ecommerce_app_api_26/features/auth/data/models/response/login_response_model.dart';
 import 'package:ecommerce_app_api_26/features/home/presentation/screens/home_screen.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:ecommerce_app_api_26/features/auth/presentation/screens/signup_screen.dart';
 import 'package:ecommerce_app_api_26/features/main_wrapper/presentation/screens/main_wrapper.dart';
@@ -16,29 +18,75 @@ class _LoginScreenState extends State<LoginScreen> {
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
   bool isLoading = false;
+
   @override
   void dispose() {
     _emailController.dispose();
     _passwordController.dispose();
     super.dispose();
   }
+  void login()async{
+    if (_formKey.currentState!.validate() ) {
+      UserCredential userCredential=await FirebaseAuth.instance.signInWithEmailAndPassword(email: _emailController.text, password: _passwordController.text);
+      try{
+        if(userCredential.user!=null && FirebaseAuth.instance.currentUser!.emailVerified){
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text("Logged in")),
+          );
 
-  void _login() {
-    if (_formKey.currentState!.validate()) {
-      try {
-        setState(() {
-          isLoading=true;
-        });
-        AuthApi().login(
-            _emailController.text,
-            _passwordController.text);
-        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text("Logged in")));
-        Navigator.of(context).pushReplacement(MaterialPageRoute(builder: (_)=>MainWrapper()));
-      } catch (error) {
-        isLoading=false;
-        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(error.toString())));
+          Navigator.of(context).pushReplacement(
+            MaterialPageRoute(
+              builder: (_) => MainWrapper(),
+            ),
+          );
+        }else if(!FirebaseAuth.instance.currentUser!.emailVerified){
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text("verify your account")),
+          );
+        }
+          else{
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text("login failed")),
+          );
+        }
 
+      }on FirebaseAuthException catch (e) {
+        if (e.code == 'weak-password') {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text('The password provided is too weak.')),
+          );
+
+        } else if (e.code == 'email-already-in-use') {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text('The account already exists for that email.')),
+          );
+
+        }
+      } catch (e) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text(e.toString())),
+        );
+        print(e);
       }
+      // try {
+      //   setState(() {
+      //     isLoading = true;
+      //   });
+      //   await AuthApi().login(
+      //     email: _emailController.text,
+      //     password: _passwordController.text,
+      //   );
+      //
+
+      // } catch (error) {
+      //   setState(() {
+      //     isLoading = false;
+      //
+      //     ScaffoldMessenger.of(context).showSnackBar(
+      //       SnackBar(content: Text(error.toString())),
+      //     );
+      //   });
+      // }
     }
   }
 
@@ -120,7 +168,9 @@ class _LoginScreenState extends State<LoginScreen> {
                         width: double.infinity,
                         height: 50,
                         child: ElevatedButton(
-                          onPressed: isLoading ? null : _login,
+                          onPressed: () async {
+                           login();
+                          },
                           style: ElevatedButton.styleFrom(
                             backgroundColor: Colors.blue,
                             foregroundColor: Colors.white,

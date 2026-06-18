@@ -1,7 +1,8 @@
 import 'package:ecommerce_app_api_26/features/auth/presentation/screens/login_screen.dart';
-import 'package:ecommerce_app_api_26/features/data/auth_api/auth_api.dart';
-import 'package:ecommerce_app_api_26/features/home/presentation/screens/home_screen.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+
+import '../../data/auth_api/auth_api.dart';
 
 class SignupScreen extends StatefulWidget {
   const SignupScreen({super.key});
@@ -15,7 +16,8 @@ class _SignupScreenState extends State<SignupScreen> {
   final _nameController = TextEditingController();
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
-  bool isLoading=false;
+  final FirebaseAuth auth= FirebaseAuth.instance;
+  bool isLoading = false ;
 
   @override
   void dispose() {
@@ -25,27 +27,48 @@ class _SignupScreenState extends State<SignupScreen> {
     super.dispose();
   }
 
-  void _signup() async {
+  void _signup() async{
     if (_formKey.currentState!.validate()) {
-      try {
-        setState(() { isLoading = true; });
-        await AuthApi().signup(
-            _nameController.text,
-            _emailController.text,
-            _passwordController.text);
-
+      UserCredential userCredential= await auth.createUserWithEmailAndPassword(email: _emailController.text, password: _passwordController.text);
+      if (userCredential.user!=null){
+        auth.currentUser!.sendEmailVerification();
         ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(content: Text("Account Created! Please Login now")));
+          const SnackBar(content: Text("Account Created Successfully")),
+        );
 
-
-        Navigator.of(context).pushReplacement(
-            MaterialPageRoute(builder: (_) => const LoginScreen()));
-
-      } catch (error) {
-        setState(() { isLoading = false; });
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(builder: (context) => const LoginScreen()),
+        );
+      }else{
         ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text(error.toString())));
+          const SnackBar(content: Text("Signup failed")),
+        );
       }
+
+
+
+
+
+      // setState(() {
+      //   isLoading = true;
+      // });
+      // try {
+      //   await AuthApi().signup(
+      //     _nameController.text,
+      //     _emailController.text,
+      //     _passwordController.text,
+      //   );
+      //
+
+      // } catch (e) {
+      //   setState(() {
+      //     isLoading = false;
+      //   });
+      //   ScaffoldMessenger.of(
+      //     context,
+      //   ).showSnackBar(SnackBar(content: Text(e.toString())));
+      // }
     }
   }
 
@@ -139,8 +162,8 @@ class _SignupScreenState extends State<SignupScreen> {
                       SizedBox(
                         width: double.infinity,
                         height: 50,
-                        child:  ElevatedButton(
-                          onPressed: isLoading?null:_signup,
+                        child: ElevatedButton(
+                          onPressed: isLoading?null :_signup,
                           style: ElevatedButton.styleFrom(
                             backgroundColor: Colors.blue,
                             foregroundColor: Colors.white,
